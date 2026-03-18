@@ -1,0 +1,5 @@
+{
+  "name": "SwiftCart",
+  "description": "A full-featured responsive e-commerce application with multi-page navigation, cart management, and secure checkout flow.",
+  "requestFramePermissions": []
+}
