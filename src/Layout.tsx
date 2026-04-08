@@ -91,18 +91,119 @@ export default function Layout() {
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:block">
+        <nav className="hidden md:block border-t border-zinc-50">
           <div className="container mx-auto px-4">
             <ul className="flex justify-center gap-10">
+              <li className="group relative py-4">
+                <Link to="/" className="text-sm font-bold text-zinc-700 uppercase tracking-wider group-hover:text-pink-400 transition-colors">
+                  Home
+                </Link>
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+              </li>
+              
+              <li className="group relative py-4">
+                <button className="text-sm font-bold text-zinc-700 uppercase tracking-wider group-hover:text-pink-400 transition-colors flex items-center gap-1 cursor-default">
+                  Categories
+                  <motion.span
+                    animate={{ rotate: 0 }}
+                    whileHover={{ rotate: 180 }}
+                    className="inline-block"
+                  >
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </motion.span>
+                </button>
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                
+                {/* Dropdown Menu */}
+                <AnimatePresence>
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      className="bg-white border border-zinc-100 shadow-xl rounded-xl p-4 min-w-[200px]"
+                    >
+                      <ul className="space-y-1">
+                        {[
+                          { name: "Men's", path: '/category/mens' },
+                          { name: "Women's", path: '/category/womens' },
+                          { name: 'Jewelry', path: '/category/jewelry' },
+                          { name: 'Perfume', path: '/category/perfume' },
+                          { name: 'Hot Offers', path: '/category/hot-offers' }
+                        ].map((sub, idx) => (
+                          <li key={idx}>
+                            <Link 
+                              to={sub.path}
+                              className="block px-4 py-2.5 text-sm font-medium text-zinc-600 hover:text-pink-400 hover:bg-pink-50 rounded-lg transition-all"
+                            >
+                              {sub.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  </div>
+                </AnimatePresence>
+              </li>
+
+              <li className="group relative py-4">
+                <Link to="/category/mens" className="text-sm font-bold text-zinc-700 uppercase tracking-wider group-hover:text-pink-400 transition-colors flex items-center gap-1">
+                  Men's
+                  <motion.span animate={{ rotate: 0 }} className="inline-block">
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </motion.span>
+                </Link>
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-400 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                
+                {/* Mega Menu */}
+                <div className="absolute top-full left-0 w-[600px] pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    className="bg-white border border-zinc-100 shadow-2xl rounded-2xl p-8 grid grid-cols-3 gap-8"
+                  >
+                    <div>
+                      <h4 className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-4 pb-2 border-b border-zinc-100">Shirts & Tops</h4>
+                      <ul className="space-y-2">
+                        <li><Link to="/category/mens?sub=shirts" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Casual Shirts</Link></li>
+                        <li><Link to="/category/mens?sub=shirts" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Formal Shirts</Link></li>
+                        <li><Link to="/category/mens?sub=jackets" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Jackets</Link></li>
+                        <li><Link to="/category/mens?sub=shirts" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">T-Shirts</Link></li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-4 pb-2 border-b border-zinc-100">Bottoms</h4>
+                      <ul className="space-y-2">
+                        <li><Link to="/category/mens?sub=jeans" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Jeans</Link></li>
+                        <li><Link to="/category/mens?sub=shorts" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Shorts</Link></li>
+                        <li><Link to="/category/mens?sub=jeans" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Trousers</Link></li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-black text-zinc-900 uppercase tracking-widest mb-4 pb-2 border-b border-zinc-100">Footwear</h4>
+                      <ul className="space-y-2">
+                        <li><Link to="/category/mens?sub=shoes-sports" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Sports Shoes</Link></li>
+                        <li><Link to="/category/mens?sub=shoes-formal" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Formal Shoes</Link></li>
+                        <li><Link to="/category/mens?sub=shoes-casual" className="text-sm text-zinc-500 hover:text-pink-400 transition-colors">Casual Shoes</Link></li>
+                      </ul>
+                    </div>
+                    <div className="col-span-3 pt-4 border-t border-zinc-50 flex justify-between items-center">
+                      <Link to="/category/perfume" className="text-sm font-bold text-pink-400 hover:underline">Explore Men's Fragrances</Link>
+                      <Link to="/category/hot-offers" className="px-4 py-1.5 bg-red-50 text-red-500 text-[10px] font-black uppercase rounded-full">Hot Offers</Link>
+                    </div>
+                  </motion.div>
+                </div>
+              </li>
+
               {[
-                { name: 'Home', path: '/' },
-                { name: 'Categories', path: '/category/all' },
-                { name: "Men's", path: '/category/mens' },
                 { name: "Women's", path: '/category/womens' },
                 { name: 'Jewelry', path: '/category/jewelry' },
                 { name: 'Perfume', path: '/category/perfume' },
                 { name: 'Blog', path: '#' },
-                { name: 'Hot Offers', path: '#' }
+                { name: 'Hot Offers', path: '/category/hot-offers' }
               ].map((item, i) => (
                 <li key={i} className="group relative py-4">
                   <Link to={item.path} className="text-sm font-bold text-zinc-700 uppercase tracking-wider group-hover:text-pink-400 transition-colors">
@@ -151,7 +252,6 @@ export default function Layout() {
               { title: "Popular Categories", items: ["Fashion", "Electronic", "Cosmetic", "Health", "Watches"] },
               { title: "Products", items: ["Prices drop", "New products", "Best sales", "Contact us", "Sitemap"] },
               { title: "Our Company", items: ["Delivery", "Legal Notice", "Terms and conditions", "About us", "Secure payment"] },
-              { title: "Admin", items: [{ name: "Admin Dashboard", path: "/admin" }] },
               { title: "Services", items: ["Prices drop", "New products", "Best sales", "Contact us", "Sitemap"] }
             ].map((nav, i) => (
               <div key={i}>
@@ -161,13 +261,7 @@ export default function Layout() {
                 </h4>
                 <ul className="space-y-3">
                   {nav.items.map((item, idx) => (
-                    <li key={idx}>
-                      {typeof item === 'string' ? (
-                        <a href="#" className="text-xs hover:text-pink-400 transition-colors">{item}</a>
-                      ) : (
-                        <Link to={item.path} className="text-xs hover:text-pink-400 transition-colors">{item.name}</Link>
-                      )}
-                    </li>
+                    <li key={idx}><a href="#" className="text-xs hover:text-pink-400 transition-colors">{item}</a></li>
                   ))}
                 </ul>
               </div>
@@ -260,8 +354,8 @@ export default function Layout() {
                   { name: "Women's", path: '/category/womens' },
                   { name: 'Jewelry', path: '/category/jewelry' },
                   { name: 'Perfume', path: '/category/perfume' },
-                  { name: 'Blog', path: '#' },
-                  { name: 'Hot Offers', path: '#' }
+                  { name: 'Hot Offers', path: '/category/hot-offers' },
+                  { name: 'Blog', path: '#' }
                 ].map((item, i) => (
                   <li key={i} className="border-b border-zinc-50 pb-4">
                     <Link 

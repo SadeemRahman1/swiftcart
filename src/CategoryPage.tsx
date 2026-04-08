@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Product } from './data/products';
+import { useParams, Link, useLocation } from 'react-router-dom';
+import { allProducts, Product } from './data/products';
 import { useCart } from './context/CartContext';
 import { 
   Heart, 
@@ -32,10 +32,9 @@ const ProductGridItem: React.FC<{ product: Product; onQuickView: (p: Product) =>
 
   return (
     <div 
-      className="group relative border border-zinc-100 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-all cursor-pointer"
+      className="group relative border border-zinc-100 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-all"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onQuickView(product)}
     >
       <div className="relative aspect-[3/4] overflow-hidden">
         <img 
@@ -52,34 +51,22 @@ const ProductGridItem: React.FC<{ product: Product; onQuickView: (p: Product) =>
         
         <div className="absolute top-4 right-4 md:-right-12 md:group-hover:right-4 flex flex-col gap-2 transition-all duration-300 z-10">
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleWishlist(product);
-            }}
+            onClick={() => toggleWishlist(product)}
             className={`p-2 backdrop-blur-sm rounded-lg shadow-md transition-colors ${isFavorite ? 'bg-pink-400 text-white' : 'bg-white/90 text-zinc-500 hover:bg-zinc-900 hover:text-white'}`}
           >
             <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />
           </button>
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              onQuickView(product);
-            }}
+            onClick={() => onQuickView(product)}
             className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-md text-zinc-500 hover:bg-zinc-900 hover:text-white transition-colors"
           >
             <Eye size={18} />
           </button>
-          <button 
-            onClick={(e) => e.stopPropagation()}
-            className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-md text-zinc-500 hover:bg-zinc-900 hover:text-white transition-colors"
-          >
+          <button className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-md text-zinc-500 hover:bg-zinc-900 hover:text-white transition-colors">
             <Repeat size={18} />
           </button>
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product);
-            }}
+            onClick={() => addToCart(product)}
             className="p-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-md text-zinc-500 hover:bg-zinc-900 hover:text-white transition-colors"
           >
             <ShoppingBag size={18} />
@@ -101,10 +88,7 @@ const ProductGridItem: React.FC<{ product: Product; onQuickView: (p: Product) =>
             )}
           </div>
           <button 
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCart(product);
-            }}
+            onClick={() => addToCart(product)}
             className="md:hidden p-2 bg-pink-400 text-white rounded-lg shadow-sm"
           >
             <Plus size={14} />
@@ -117,27 +101,13 @@ const ProductGridItem: React.FC<{ product: Product; onQuickView: (p: Product) =>
 
 export default function CategoryPage() {
   const { slug } = useParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const subCategory = searchParams.get('sub');
+  
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    const fetchCategoryProducts = async () => {
-      try {
-        const response = await fetch(`/api/products?type=${slug}`);
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error("Error fetching category products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategoryProducts();
-  }, [slug]);
 
   useEffect(() => {
     if (quickViewProduct) {
@@ -145,22 +115,30 @@ export default function CategoryPage() {
     }
   }, [quickViewProduct]);
 
-  const categoryTitle = slug === 'all' ? 'All Products' : slug?.charAt(0).toUpperCase() + slug?.slice(1) + "'s Fashion";
+  const filteredProducts = slug === 'all' 
+    ? allProducts 
+    : allProducts.filter(p => {
+        const matchesMain = p.type === slug;
+        if (subCategory) {
+          return matchesMain && p.subCategory === subCategory;
+        }
+        return matchesMain;
+      });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-400"></div>
-      </div>
-    );
-  }
+  const categoryTitle = slug === 'all' 
+    ? 'All Products' 
+    : slug === 'hot-offers' 
+      ? 'Hot Offers' 
+      : subCategory 
+        ? `${subCategory.charAt(0).toUpperCase() + subCategory.slice(1).replace('-', ' ')}`
+        : slug?.charAt(0).toUpperCase() + slug?.slice(1) + "'s Fashion";
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         <div>
           <h1 className="text-3xl font-black text-zinc-900 uppercase tracking-tighter mb-2">{categoryTitle}</h1>
-          <p className="text-sm text-zinc-400">Showing {products.length} products</p>
+          <p className="text-sm text-zinc-400">Showing {filteredProducts.length} products</p>
         </div>
         
         <div className="flex items-center gap-4 bg-zinc-50 p-2 rounded-2xl">
@@ -176,7 +154,7 @@ export default function CategoryPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {products.map(product => (
+        {filteredProducts.map(product => (
           <ProductGridItem 
             key={product.id} 
             product={product} 
@@ -185,7 +163,7 @@ export default function CategoryPage() {
         ))}
       </div>
 
-      {products.length === 0 && (
+      {filteredProducts.length === 0 && (
         <div className="text-center py-20">
           <h2 className="text-xl font-bold text-zinc-400">No products found in this category.</h2>
           <Link to="/" className="text-pink-400 font-bold hover:underline mt-4 inline-block">Back to Home</Link>
